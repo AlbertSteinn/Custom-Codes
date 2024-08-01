@@ -40,7 +40,7 @@ tact_recovery := class<concrete>:
         # DamagedEvent() is for health only. DamagedShieldEvent() is for shield
         do:
             FortChar.DamagedEvent().Subscribe(OnPlayerDamaged)
-            if(LevelTracker.GetValue() = 5):
+            if(LevelTracker.GetValue(Player) = 5):
                 Print("Level 5")
                 FortChar.DamagedShieldEvent().Subscribe(OnPlayerShieldDamaged)
 
@@ -70,18 +70,18 @@ tact_recovery := class<concrete>:
         0.02 / (Value / 100.0)
 
     Heal(Player:player)<suspends>:void =
-        Delay := case(LevelTracker.GetValue()):
+        Delay := case(LevelTracker.GetValue(Player)):
             1 => 4.0
             2 => 3.0
             3 => 2.0
             4 => 1.0
             _ => 0.0
-        Rate := case(LevelTracker.GetValue()):
+        Rate := case(LevelTracker.GetValue(Player)):
             5 => CalculateHealingInterval(50.0)
             _ => CalculateHealingInterval(75.0)
         race:
             block:
-                Print("Level {LevelTracker.GetValue()} Timer: {Delay}")
+                Print("Level {LevelTracker.GetValue(Player)} Timer: {Delay}")
                 Sleep(Delay)
                 Print("Rate: {Rate}")
                 loop:
