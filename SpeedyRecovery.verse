@@ -36,8 +36,7 @@ speedy_recovery := class<concrete>:
             FortChar := Player.GetFortCharacter[]
             set DamagedEventMap[Player] = event(){}
         # DamagedEvent() is for health only. DamagedShieldEvent() is for shield
-        do:
-            FortChar.DamagedEvent().Subscribe(OnPlayerDamaged)
+        do {FortChar.DamagedEvent().Subscribe(OnPlayerDamaged)}
 
     OnPlayerDamaged(Result:damage_result):void =
         Print("PlayerDamaged")
@@ -54,23 +53,23 @@ speedy_recovery := class<concrete>:
         0.02 / (Value / 100.0)
 
     Heal(Player:player)<suspends>:void =
-        Delay := case(LevelTracker.GetValue()):
+        Delay := case(LevelTracker.GetValue(Player)):
             1 => 4.0
             2 => 2.5
             3 => 1.5
             _ => 1.0
-        Rate := case(LevelTracker.GetValue()):
+        Rate := case(LevelTracker.GetValue(Player)):
             4 => CalculateHealingInterval(200.0)
             _ => CalculateHealingInterval(150.0)
         race:
             block:
-                Print("Level {LevelTracker.GetValue()} Timer: {Delay}")
+                Print("Level {LevelTracker.GetValue(Player)} Timer: {Delay}")
                 Sleep(Delay)
                 Print("Rate: {Rate}")
                 loop:
                     Sleep(Rate)
                     if:
-                        LevelTracker.GetValue() = 4
+                        LevelTracker.GetValue(Player) = 4
                         FortChar := Player.GetFortCharacter[]
                         FortChar.GetHealth() < 0.25 * FortChar.GetMaxHealth()
                     then:
